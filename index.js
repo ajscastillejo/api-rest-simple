@@ -29,17 +29,28 @@ var UserSchema = mongoose.Schema({
     avatar: String
 });
 
+app.set('json spaces', 40);
+
 var User = module.exports = mongoose.model('user', UserSchema, "usuarios");
+app.get('/users/:id1', (req, res) => {
+  var id1 = req.params.id1;
+  // asegurate que tengas un usuario con first_name = Eve
+  User.findOne({ 'id': id1 }, 'first_name last_name avatar id', function (err, usuario) {
+    if (err) return handleError(err);
+    
+		console.log(usuario.id, usuario.first_name, usuario.last_name, usuario.avatar);
+        res.send( 'hola ' + usuario.first_name + ' ' + usuario.last_name);
+		
+  });
+	
+})
 
 app.get('/users', (req, res) => {
-  	// asegurate que tengas un usuario con first_name = Eve
-    User.findOne({ 'first_name': 'Eve' }, 'first_name last_name avatar id', function (err, usuario) {
-		if (err) return handleError(err);
-  		
-		console.log(usuario.first_name, usuario.last_name, usuario.avatar, usuario.id);
-        res.send( 'hola ' + usuario.first_name);
+  // var total = req.params.User;
+  User.find(function (err, usuario) {
+        res.json(usuario);
 		
-	});
+  });
 	
 })
 
