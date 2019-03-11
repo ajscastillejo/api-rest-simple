@@ -31,7 +31,6 @@ var UserSchema = mongoose.Schema({
     last_name: String,
     id: Number,
     avatar: String,
-    versionKey: false
 });
 
 app.set('json spaces', 40);
@@ -42,8 +41,8 @@ app.get('/users/:id1', (req, res) => {
   // asegurate que tengas un usuario con first_name = Eve
   User.findOne({ 'id': id1 }, 'first_name last_name avatar id', function (err, usuario) {
     if (err) return handleError(err);
-    
-		console.log(usuario.id, usuario.first_name, usuario.last_name, usuario.avatar);
+    console.log("usuario", usuario)
+		// console.log(usuario.id, usuario.first_name, usuario.last_name, usuario.avatar);
         res.send(usuario);
 		
   });
@@ -89,10 +88,11 @@ app.delete('/delete/:id1', function (req, res) {
 });
 
 app.put('/update/:id1', function (req, res) {
-  User.findById(req.params.id1, function (err, usuario) {
+  var id1 = req.params.id1;
+  User.findById({'id':id1}, function (err, usuario) {
     if (err)
     res.send(err);
-console.log(req.params.id1)
+console.log(req.paramsx)
 usuario.first_name = req.body.first_name; 
 usuario.last_name = req.body.last_name; 
 usuario.avatar = req.body.avatar;
