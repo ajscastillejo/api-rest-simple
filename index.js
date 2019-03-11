@@ -30,7 +30,8 @@ var UserSchema = mongoose.Schema({
     first_name: String,
     last_name: String,
     id: Number,
-    avatar: String
+    avatar: String,
+    versionKey: false
 });
 
 app.set('json spaces', 40);
@@ -59,19 +60,20 @@ app.get('/users', (req, res) => {
 })
 
 app.post('/create', function (req, res) {
-  var newUser = new User();
-    newUser.first_name = req.body.first_name;
-    newUser.last_name = req.body.last_name;
-    newUser.id = req.body.id;
-    newUser.avatar = req.body.avatar;
-    newUser.save(function (err) {
+  var newUser = {
+    'first_name' : req.body.first_name,
+    'last_name' : req.body.last_name,
+    'id' : req.body.id,
+    'avatar' : req.body.avatar,
+    };
+    User.create(newUser, function (err, ok) {
         if (err)  {
           res.json(err);
           res.status(500); 
         }
         res.json({
             message: 'Nuevo usuario creado!!!',
-            data: newUser
+            data: ok
         });
         res.status(201); 
     });
@@ -79,14 +81,30 @@ app.post('/create', function (req, res) {
 
 app.delete('/delete/:id1', function (req, res) {
   var id1 = req.params.id1;
-  User.findOneAndRemove({ 'id': id1 }, function (err, usuario) {
+  User.findOneAndRemove({ 'id': id1 }, function (err) {
     if (err) return handleError(err);
   res.status(204);
 });
   res.redirect('/users');
 });
 
+app.put('/update/:id1', function (req, res) {
+  User.findById(req.params.id1, function (err, usuario) {
+    if (err)
+    res.send(err);
+console.log(req.params.id1)
+usuario.first_name = req.body.first_name; 
+usuario.last_name = req.body.last_name; 
+usuario.avatar = req.body.avatar;
 
+User.save(function(err) {
+    if (err)
+        res.send(err);
+
+    res.json({ message: 'User updated!' });
+});
+});
+});
 
 app.listen(3000, () => {
   console.log(`API REST corriendo en http://localhost:${port}`)
