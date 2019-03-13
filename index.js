@@ -6,14 +6,11 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose     = require('mongoose');
 const router = express.Router();
-const mongo = require('mongodb').MongoClient;
-const objectId = require('mongodb').ObjectID;
-const assert = require('assert');
 
 const app = express();
 const port = process.env.PORT || 3000
 
-app.use( bodyParser.urlencoded({ extended: true}))
+app.use( bodyParser.urlencoded({ extended: false}))
 app.use( bodyParser.json())
 
 mongoose.Promise = Promise;
@@ -27,43 +24,46 @@ mongoose
 
 // Creamos el objeto del esquema y sus atributos
 var UserSchema = mongoose.Schema({
-    first_name: String,
-    last_name: String,
-    id: Number,
-    avatar: String,
+  id: Number,
+  first_name: String,
+  last_name: String,
+  avatar: String,
 });
+
 
 app.set('json spaces', 40);
 
 var User = module.exports = mongoose.model('user', UserSchema, "usuarios");
 app.get('/users/:id1', (req, res) => {
   var id1 = req.params.id1;
-  // asegurate que tengas un usuario con first_name = Eve
-  User.findOne({ 'id': id1 }, 'first_name last_name avatar id', function (err, usuario) {
+  User.findOne({ 'id': id1 }, 'id first_name last_name avatar', function (err, usuario) {
     if (err) return handleError(err);
     console.log("usuario", usuario)
 		// console.log(usuario.id, usuario.first_name, usuario.last_name, usuario.avatar);
-        res.send(usuario);
+    res.send(usuario);
 		
   });
 	
 })
 
 app.get('/users', (req, res) => {
-  // var total = req.params.User;
+  var total = parseInt(req.query.total);
   User.find(function (err, usuario) {
-        res.json(usuario);
-		
+    var respuesta = {
+    data: usuario,
+    };
+    res.json(respuesta);
+  }).limit(total)
   });
-	
-})
 
 app.post('/create', function (req, res) {
   var newUser = {
+    'id' : req.body.id,
     'first_name' : req.body.first_name,
     'last_name' : req.body.last_name,
-    'id' : req.body.id,
     'avatar' : req.body.avatar,
+    '_id': req.body._id,
+    '__v': req.body.__v,
     };
     User.create(newUser, function (err, ok) {
         if (err)  {
@@ -84,12 +84,11 @@ app.delete('/delete/:id1', function (req, res) {
     if (err) return handleError(err);
   res.status(204);
 });
-  res.redirect('/users');
 });
 
 app.put('/update/:id1', function (req, res) {
   var id1 = req.params.id1;
-  User.findById({'id':id1}, function (err, usuario) {
+  User.findOne({'id':id1}, function (err, usuario) {
     if (err)
     res.send(err);
 console.log(req.paramsx)
@@ -97,7 +96,7 @@ usuario.first_name = req.body.first_name;
 usuario.last_name = req.body.last_name; 
 usuario.avatar = req.body.avatar;
 
-User.save(function(err) {
+usuario.save(function(err) {
     if (err)
         res.send(err);
 
