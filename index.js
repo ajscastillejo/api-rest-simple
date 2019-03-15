@@ -46,15 +46,32 @@ app.get('/users/:id1', (req, res) => {
 	
 })
 
+// User.find().count() 
+
 app.get('/users', (req, res) => {
-  var total = parseInt(req.query.total);
-  User.find(function (err, usuario) {
+  var page = parseInt(req.query.page);
+  var per_page = parseInt(req.query.per_page);
+  User.count({}, function( err, count){
+    User.find(function (err, usuario) {
+      if (count / per_page < page) {
+        page === count / per_page;
+      }
+      if (page < 1) {
+         page === 0 === page === 1;
+      }
+      console.log( "Number of users:", count );
     var respuesta = {
-    data: usuario,
+    'Total': count,
+    'Per_page': per_page,
+    'Page': page,
+     Data: usuario,
     };
     res.json(respuesta);
-  }).limit(total)
+  }).limit(per_page)
+  .skip(page * per_page)
+  .sort({id: 1})
   });
+})
 
 app.post('/create', function (req, res) {
   var newUser = {
