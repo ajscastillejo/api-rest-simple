@@ -9,6 +9,17 @@ const router = express.Router();
 
 const app = express();
 const port = process.env.PORT || 3000
+var options:cors.CorsOptions = {
+  allowedHeaders: ["Origin", "X-Requested-With", "Content-Type", "Accept", "X-Access-Token"],
+  credentials: true,
+  methods: "GET,HEAD,OPTIONS,PUT,PATCH,POST,DELETE",
+  origin: *,
+  preflightContinue: false
+};
+
+//use cors middleware
+app.use(cors(options));
+app.options('*', cors(options))
 
 app.use( bodyParser.urlencoded({ extended: false}))
 app.use( bodyParser.json())
@@ -36,6 +47,13 @@ app.set('json spaces', 40);
 var User = module.exports = mongoose.model('user', UserSchema, "usuarios");
 app.get('/users/:id1', (req, res) => {
   var id1 = req.params.id1;
+  // if (id1 !=  ) {
+  //   res.send('404 NOT FOUND')
+  // }
+  // else if (id1 != usuario) {
+  //   res.send('USER ID NOT FOUND')
+  // }
+
   User.findOne({ 'id': id1 }, 'id first_name last_name avatar', function (err, usuario) {
     if (err) return handleError(err);
     console.log("usuario", usuario)
@@ -52,28 +70,29 @@ app.get('/users', (req, res) => {
   var page = parseInt(req.query.page);
   var per_page = parseInt(req.query.per_page);
   User.count({}, function( err, count){
+    var total_page = parseInt(count / per_page);
+
+   if (count / per_page < page) {
+    page = Math.ceil(count / per_page) ;
+  }
+
     User.find(function (err, usuario) {
-      if (count / per_page < page) {
-        page === count / per_page;
-      }
-      if (page < 1) {
-         page === 0 === page === 1;
-      }
       console.log( "Number of users:", count );
-    var respuesta = {
-    'Total': count,
-    'Per_page': per_page,
-    'Page': page,
-     Data: usuario,
-    };
-    res.json(respuesta);
-  }).limit(per_page)
-  .skip(page * per_page)
-  .sort({id: 1})
+      var respuesta = {
+        'total': count,
+        'per_page': per_page,
+        'page': page,
+        'total_page': total_page,
+        Data: usuario,
+      };
+      res.json(respuesta);
+    }).skip( page > 0 ? ( ( page - 1 ) * per_page ) : 0 )
+    .limit( per_page )
+    .sort({id: 1})
   });
 })
 
-app.post('/create', function (req, res) {
+app.post('/users', function (req, res) {
   var newUser = {
     'id' : req.body.id,
     'first_name' : req.body.first_name,
@@ -95,7 +114,7 @@ app.post('/create', function (req, res) {
     });
 });
 
-app.delete('/delete/:id1', function (req, res) {
+app.delete('/users/:id1', function (req, res) {
   var id1 = req.params.id1;
   User.findOneAndRemove({ 'id': id1 }, function (err) {
     if (err) return handleError(err);
@@ -103,7 +122,7 @@ app.delete('/delete/:id1', function (req, res) {
 });
 });
 
-app.put('/update/:id1', function (req, res) {
+app.put('/users/:id1', function (req, res) {
   var id1 = req.params.id1;
   User.findOne({'id':id1}, function (err, usuario) {
     if (err)
@@ -121,6 +140,8 @@ usuario.save(function(err) {
 });
 });
 });
+
+
 
 app.listen(3000, () => {
   console.log(`API REST corriendo en http://localhost:${port}`)
