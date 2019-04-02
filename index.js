@@ -5,21 +5,18 @@ require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose     = require('mongoose');
-const router = express.Router();
+var cors = require('cors');
 
 const app = express();
 const port = process.env.PORT || 3000
-var options:cors.CorsOptions = {
+
+app.use(cors({
   allowedHeaders: ["Origin", "X-Requested-With", "Content-Type", "Accept", "X-Access-Token"],
   credentials: true,
   methods: "GET,HEAD,OPTIONS,PUT,PATCH,POST,DELETE",
-  origin: *,
+  origin: 'http://localhost:4200',
   preflightContinue: false
-};
-
-//use cors middleware
-app.use(cors(options));
-app.options('*', cors(options))
+}));
 
 app.use( bodyParser.urlencoded({ extended: false}))
 app.use( bodyParser.json())
@@ -83,7 +80,7 @@ app.get('/users', (req, res) => {
         'per_page': per_page,
         'page': page,
         'total_page': total_page,
-        Data: usuario,
+        data: usuario,
       };
       res.json(respuesta);
     }).skip( page > 0 ? ( ( page - 1 ) * per_page ) : 0 )
