@@ -38,7 +38,6 @@ var UserSchema = mongoose.Schema({
   avatar: String,
 });
 
-
 app.set('json spaces', 40);
 
 var User = module.exports = mongoose.model('user', UserSchema, "usuarios");
