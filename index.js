@@ -1,6 +1,8 @@
 'use strict'
 
-const npmEnv = require('npm-package-env');
+//const npmEnv = require('npm-package-env');
+
+require('dotenv').config();
 
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -23,7 +25,7 @@ app.use( bodyParser.json())
 
 mongoose.Promise = Promise;
 mongoose
-  .connect(npmEnv.config['db-server'].dburl)
+  .connect(process.env.DBURL)
   .then(() => {
     console.log('Connected to Mongo!')
   }).catch(err => {
