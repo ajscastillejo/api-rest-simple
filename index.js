@@ -1,6 +1,6 @@
 'use strict'
 
-require('dotenv').config({ path: './' });
+var config = require('./config');
 
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -23,7 +23,7 @@ app.use( bodyParser.json())
 
 mongoose.Promise = Promise;
 mongoose
-  .connect(process.env.DBURL, {useMongoClient: true})
+  .connect(config.DBURL, {useMongoClient: true})
   .then(() => {
     console.log('Connected to Mongo!')
   }).catch(err => {
