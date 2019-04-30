@@ -16,15 +16,9 @@
     "dot-env": "0.0.1",
     "express": "^4.16.4",
     "mongodb": "^3.1.13",
-    "mongoose": "^5.4.17",
-    "npm-package-env": "^0.4.9"
+    "mongoose": "^5.4.17"
   },
   "devDependencies": {
     "nodemon": "^1.18.10"
-  },
-  "config": {
-    "db-server": {
-      "dburl": "mongodb://user-admin:a123456789@ds155825.mlab.com:55825/user-manager"
-    }
   }
 }
