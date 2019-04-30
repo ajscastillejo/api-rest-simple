@@ -1,6 +1,6 @@
 'use strict'
 
-var config = require('./config');
+const npmEnv = require('npm-package-env');
 
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -23,7 +23,7 @@ app.use( bodyParser.json())
 
 mongoose.Promise = Promise;
 mongoose
-  .connect(config.DBURL, {useMongoClient: true})
+  .connect(npmEnv.config['db-server'].dburl)
   .then(() => {
     console.log('Connected to Mongo!')
   }).catch(err => {
