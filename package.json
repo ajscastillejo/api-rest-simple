@@ -20,5 +20,13 @@
   },
   "devDependencies": {
     "nodemon": "^1.18.10"
-  }
+  },
+  "bundledDependencies": [
+    "body-parser",
+    "cors",
+    "dotenv",
+    "express",
+    "mongodb",
+    "mongoose"
+  ]
 }
